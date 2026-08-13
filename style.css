@@ -123,6 +123,8 @@ body {
     cursor: pointer;
     font-weight: 600;
     transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
 }
 
 .btn-primary {
@@ -143,6 +145,18 @@ body {
 .btn-success:hover {
     transform: translateY(-2px);
     box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4);
+}
+
+.btn-practice {
+    background: linear-gradient(135deg, var(--accent-pink), #ec0a43);
+    color: white;
+    font-size: 1.1rem;
+    padding: 1rem 2.5rem;
+}
+
+.btn-practice:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(244, 63, 94, 0.4);
 }
 
 .btn-small {
@@ -383,6 +397,51 @@ body {
 }
 
 /* ===========================
+   PRACTICE TESTS SECTION
+   =========================== */
+
+.practice-tests {
+    padding: 4rem 0;
+    background: linear-gradient(135deg, var(--bg-dark) 0%, #1a1f3a 50%, var(--bg-darker) 100%);
+    border-top: 1px solid rgba(99, 102, 241, 0.3);
+    border-bottom: 1px solid rgba(99, 102, 241, 0.3);
+}
+
+.practice-tests h2 {
+    text-align: center;
+    font-size: 2rem;
+    margin-bottom: 2rem;
+    color: var(--accent-pink);
+}
+
+.practice-content {
+    background: linear-gradient(135deg, #1a1f3a, #0f1428);
+    padding: 2.5rem;
+    border-radius: 1rem;
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    text-align: center;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.practice-intro {
+    font-size: 1.1rem;
+    color: var(--text-gray);
+    margin-bottom: 2rem;
+}
+
+.practice-tips {
+    font-size: 0.95rem;
+    color: var(--text-gray);
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background: rgba(168, 85, 247, 0.1);
+    border-left: 4px solid var(--accent-purple);
+    border-radius: 0.5rem;
+    text-align: left;
+}
+
+/* ===========================
    MODAL STYLES
    =========================== */
 
@@ -557,6 +616,14 @@ body {
 }
 
 /* ===========================
+   SCHEDULE CONTAINER
+   =========================== */
+
+.schedule-container {
+    margin-bottom: 2rem;
+}
+
+/* ===========================
    MODAL BUTTONS
    =========================== */
 
@@ -652,5 +719,13 @@ body {
 
     .modal-buttons .btn {
         flex: 1;
+    }
+
+    .practice-content {
+        padding: 1.5rem;
+    }
+
+    .practice-intro {
+        font-size: 1rem;
     }
 }
