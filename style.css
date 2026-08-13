@@ -383,6 +383,197 @@ body {
 }
 
 /* ===========================
+   MODAL STYLES
+   =========================== */
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    overflow-y: auto;
+}
+
+.modal-content {
+    background: linear-gradient(135deg, #1a1f3a, #0f1428);
+    margin: 2rem auto;
+    padding: 2rem;
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    border-radius: 1rem;
+    width: 90%;
+    max-width: 1000px;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.close {
+    color: var(--text-gray);
+    float: right;
+    font-size: 2rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.close:hover {
+    color: var(--accent-pink);
+}
+
+#schedule-title {
+    color: var(--accent-blue);
+    margin-bottom: 1.5rem;
+}
+
+/* ===========================
+   SUBJECT TABS
+   =========================== */
+
+.subject-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    border-bottom: 2px solid rgba(99, 102, 241, 0.2);
+    padding-bottom: 0.5rem;
+}
+
+.subject-tab {
+    background: rgba(99, 102, 241, 0.1);
+    color: var(--text-light);
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    padding: 0.7rem 1.5rem;
+    border-radius: 0.5rem 0.5rem 0 0;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border: none;
+}
+
+.subject-tab:hover {
+    background: rgba(99, 102, 241, 0.2);
+    border-color: var(--primary-color);
+}
+
+.subject-tab.active {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+/* ===========================
+   SCHEDULE TABLE (Excel-like)
+   =========================== */
+
+.schedule-container {
+    overflow-x: auto;
+    margin-bottom: 2rem;
+}
+
+.schedule-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
+
+.schedule-table thead {
+    background-color: rgba(99, 102, 241, 0.15);
+    border-bottom: 2px solid var(--primary-color);
+}
+
+.schedule-table th {
+    padding: 1rem;
+    text-align: left;
+    font-weight: 700;
+    color: var(--accent-blue);
+    border-right: 1px solid rgba(99, 102, 241, 0.2);
+}
+
+.schedule-table th:last-child {
+    border-right: none;
+}
+
+.schedule-table tbody tr {
+    border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+    transition: background-color 0.3s ease;
+}
+
+.schedule-table tbody tr:hover {
+    background-color: rgba(99, 102, 241, 0.05);
+}
+
+.schedule-table td {
+    padding: 0.8rem 1rem;
+    border-right: 1px solid rgba(99, 102, 241, 0.1);
+}
+
+.schedule-table td:last-child {
+    border-right: none;
+}
+
+.week-cell {
+    font-weight: 600;
+    color: var(--accent-purple);
+    width: 15%;
+}
+
+.topic-cell {
+    width: 55%;
+}
+
+.status-cell {
+    width: 30%;
+}
+
+.topic-input,
+.status-select {
+    width: 100%;
+    padding: 0.6rem;
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    border-radius: 0.4rem;
+    color: var(--text-light);
+    font-size: 0.95rem;
+    font-family: inherit;
+    transition: all 0.3s ease;
+}
+
+.topic-input:focus,
+.status-select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    background-color: rgba(99, 102, 241, 0.1);
+    box-shadow: 0 0 8px rgba(99, 102, 241, 0.2);
+}
+
+.status-select option {
+    background-color: var(--bg-dark);
+    color: var(--text-light);
+}
+
+/* ===========================
+   MODAL BUTTONS
+   =========================== */
+
+.modal-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(99, 102, 241, 0.2);
+}
+
+.modal-buttons .btn {
+    flex: 0 1 200px;
+}
+
+/* ===========================
    FOOTER
    =========================== */
 
@@ -428,5 +619,50 @@ body {
     .checkbox-group {
         flex-direction: column;
         gap: 0.5rem;
+    }
+
+    .modal-content {
+        width: 95%;
+        margin: 1rem auto;
+        padding: 1rem;
+    }
+
+    .schedule-table {
+        font-size: 0.9rem;
+    }
+
+    .schedule-table th,
+    .schedule-table td {
+        padding: 0.6rem 0.4rem;
+    }
+
+    .week-cell {
+        width: 20%;
+    }
+
+    .topic-cell {
+        width: 45%;
+    }
+
+    .status-cell {
+        width: 35%;
+    }
+
+    .subject-tabs {
+        gap: 0.25rem;
+    }
+
+    .subject-tab {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+    }
+
+    .modal-buttons {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .modal-buttons .btn {
+        flex: 1;
     }
 }
