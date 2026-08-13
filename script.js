@@ -154,7 +154,7 @@ function createPlanCard(plan) {
 
 /* ===========================
    OPEN SCHEDULE EDITOR
-   Opens modal with Excel-like schedule table
+   Opens modal with Excel-like spreadsheet
    =========================== */
 function editPlanSchedule(planId) {
     // Get all plans from storage
@@ -193,8 +193,8 @@ function editPlanSchedule(planId) {
     // Create subject tabs
     createSubjectTabs(plan.subjects);
 
-    // Show schedule for first subject
-    showScheduleTable(plan.subjects[0]);
+    // Show spreadsheet for first subject
+    showExcelSpreadsheet(plan.subjects[0]);
 
     // Show modal
     document.getElementById('schedule-modal').style.display = 'block';
@@ -220,7 +220,7 @@ function createSubjectTabs(subjects) {
 
 /* ===========================
    SWITCH TAB
-   Switches between subject tabs and displays that schedule
+   Switches between subject tabs and displays that spreadsheet
    =========================== */
 function switchTab(subject) {
     currentEditSubject = subject;
@@ -235,93 +235,117 @@ function switchTab(subject) {
         }
     });
 
-    // Show schedule for selected subject
-    showScheduleTable(subject);
+    // Show spreadsheet for selected subject
+    showExcelSpreadsheet(subject);
 }
 
 /* ===========================
-   SHOW SCHEDULE TABLE
-   Creates Excel-like table for a subject
+   SHOW EXCEL SPREADSHEET
+   Creates Excel-style spreadsheet grid
    =========================== */
-function showScheduleTable(subject) {
+function showExcelSpreadsheet(subject) {
     const schedule = currentEditPlan.schedule[subject];
     const container = document.getElementById('schedule-container');
     
-    // Create table HTML
-    let tableHTML = `
-        <table class="schedule-table">
-            <thead>
-                <tr>
-                    <th>Week</th>
-                    <th>Topic/Activity</th>
-                    <th>Status</th>
-                </tr>
-            </thead>
-            <tbody>
-    `;
-
-    // Add row for each week
+    // Create wrapper with scroll container
+    container.innerHTML = '<div class="excel-wrapper"></div>';
+    const wrapper = container.querySelector('.excel-wrapper');
+    
+    // Create table
+    const table = document.createElement('table');
+    table.className = 'excel-spreadsheet';
+    
+    // Create header row
+    const headerRow = document.createElement('tr');
+    headerRow.className = 'header-row';
+    
+    // Header cells
+    const headers = ['Week', 'Topic/Activity', 'Status'];
+    headers.forEach((header, index) => {
+        const th = document.createElement('th');
+        th.textContent = header;
+        th.className = 'excel-header';
+        if (index === 0) th.style.width = '15%';
+        else if (index === 1) th.style.width = '55%';
+        else th.style.width = '30%';
+        headerRow.appendChild(th);
+    });
+    table.appendChild(headerRow);
+    
+    // Create data rows
+    const tbody = document.createElement('tbody');
     for (let week = 1; week <= currentEditPlan.weeks; week++) {
         const weekKey = `Week ${week}`;
         const weekData = schedule[weekKey];
-        const rowId = `row-${subject}-${week}`;
-
-        tableHTML += `
-            <tr class="schedule-row" id="${rowId}">
-                <td class="week-cell">${weekKey}</td>
-                <td class="topic-cell">
-                    <input 
-                        type="text" 
-                        class="topic-input" 
-                        data-subject="${subject}"
-                        data-week="${weekKey}"
-                        value="${weekData.topic}" 
-                        placeholder="Enter topic or activity"
-                    >
-                </td>
-                <td class="status-cell">
-                    <select class="status-select" data-subject="${subject}" data-week="${weekKey}">
-                        <option value="Not Started" ${weekData.status === 'Not Started' ? 'selected' : ''}>Not Started</option>
-                        <option value="In Progress" ${weekData.status === 'In Progress' ? 'selected' : ''}>In Progress</option>
-                        <option value="Completed" ${weekData.status === 'Completed' ? 'selected' : ''}>Completed</option>
-                    </select>
-                </td>
-            </tr>
-        `;
+        
+        const row = document.createElement('tr');
+        row.className = 'excel-row';
+        
+        // Week cell
+        const weekCell = document.createElement('td');
+        weekCell.className = 'excel-cell week-header';
+        weekCell.textContent = weekKey;
+        row.appendChild(weekCell);
+        
+        // Topic cell
+        const topicCell = document.createElement('td');
+        topicCell.className = 'excel-cell';
+        const topicInput = document.createElement('input');
+        topicInput.type = 'text';
+        topicInput.className = 'excel-input';
+        topicInput.value = weekData.topic;
+        topicInput.placeholder = 'Enter topic or activity';
+        topicInput.dataset.subject = subject;
+        topicInput.dataset.week = weekKey;
+        topicInput.addEventListener('change', updateScheduleData);
+        topicCell.appendChild(topicInput);
+        row.appendChild(topicCell);
+        
+        // Status cell
+        const statusCell = document.createElement('td');
+        statusCell.className = 'excel-cell';
+        const statusSelect = document.createElement('select');
+        statusSelect.className = 'excel-select';
+        statusSelect.dataset.subject = subject;
+        statusSelect.dataset.week = weekKey;
+        
+        const options = [
+            { value: 'Not Started', text: 'Not Started' },
+            { value: 'In Progress', text: 'In Progress' },
+            { value: 'Completed', text: 'Completed ✓' }
+        ];
+        
+        options.forEach(opt => {
+            const option = document.createElement('option');
+            option.value = opt.value;
+            option.textContent = opt.text;
+            if (opt.value === weekData.status) option.selected = true;
+            statusSelect.appendChild(option);
+        });
+        
+        statusSelect.addEventListener('change', updateScheduleData);
+        statusCell.appendChild(statusSelect);
+        row.appendChild(statusCell);
+        
+        tbody.appendChild(row);
     }
-
-    tableHTML += `
-            </tbody>
-        </table>
-    `;
-
-    container.innerHTML = tableHTML;
-
-    // Add event listeners for inline editing
-    const inputs = document.querySelectorAll('.topic-input');
-    const selects = document.querySelectorAll('.status-select');
-
-    inputs.forEach(input => {
-        input.addEventListener('change', updateScheduleData);
-    });
-
-    selects.forEach(select => {
-        select.addEventListener('change', updateScheduleData);
-    });
+    table.appendChild(tbody);
+    
+    wrapper.appendChild(table);
 }
 
 /* ===========================
    UPDATE SCHEDULE DATA
-   Updates schedule when user edits table
+   Updates schedule when user edits cells
    =========================== */
 function updateScheduleData(event) {
     const target = event.target;
     const subject = target.getAttribute('data-subject');
     const week = target.getAttribute('data-week');
 
-    if (target.classList.contains('topic-input')) {
+    if (target.classList.contains('excel-input')) {
         currentEditPlan.schedule[subject][week].topic = target.value;
-    } else if (target.classList.contains('status-select')) {
+    } else if (target.classList.contains('excel-select')) {
         currentEditPlan.schedule[subject][week].status = target.value;
     }
 }
