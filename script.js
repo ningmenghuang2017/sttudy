@@ -5,6 +5,10 @@
 // Load plans from browser storage when page loads
 document.addEventListener('DOMContentLoaded', loadPlans);
 
+// Global variable to store the plan being edited
+let currentEditPlan = null;
+let currentEditSubject = null;
+
 /* ===========================
    CREATE PLAN FUNCTION
    Handles form submission and creates new study plan
@@ -26,6 +30,18 @@ function createPlan(event) {
         return;
     }
 
+    // Create schedule object with empty topics for each week and subject
+    const schedule = {};
+    subjects.forEach(subject => {
+        schedule[subject] = {};
+        for (let week = 1; week <= parseInt(weeksInput); week++) {
+            schedule[subject][`Week ${week}`] = {
+                topic: '',
+                status: 'Not Started' // Not Started, In Progress, Completed
+            };
+        }
+    });
+
     // Create plan object
     const plan = {
         id: Date.now(), // Unique ID using timestamp
@@ -33,7 +49,8 @@ function createPlan(event) {
         weeks: parseInt(weeksInput),
         subjects: subjects,
         createdDate: new Date().toLocaleDateString(),
-        progress: 0 // Progress percentage (0-100)
+        progress: 0, // Progress percentage (0-100)
+        schedule: schedule // Add schedule data
     };
 
     // Save plan to browser storage
@@ -127,7 +144,7 @@ function createPlanCard(plan) {
             <span>${plan.progress}% Complete</span>
         </div>
         <div class="plan-buttons">
-            <button class="btn btn-small btn-edit" onclick="editPlan(${plan.id})">✏️ Edit</button>
+            <button class="btn btn-small btn-edit" onclick="editPlanSchedule(${plan.id})">📊 Schedule</button>
             <button class="btn btn-small btn-delete" onclick="deletePlan(${plan.id})">🗑️ Delete</button>
         </div>
     `;
@@ -136,10 +153,10 @@ function createPlanCard(plan) {
 }
 
 /* ===========================
-   EDIT PLAN FUNCTION
-   Updates an existing study plan
+   OPEN SCHEDULE EDITOR
+   Opens modal with Excel-like schedule table
    =========================== */
-function editPlan(planId) {
+function editPlanSchedule(planId) {
     // Get all plans from storage
     let plans = JSON.parse(localStorage.getItem('studyPlans'));
     
@@ -151,31 +168,193 @@ function editPlan(planId) {
         return;
     }
 
-    // Get new progress value from user
-    const newProgress = prompt(
-        `Update progress for "${plan.name}":\n(Enter a number 0-100)`,
-        plan.progress
-    );
-
-    // If user cancelled, return
-    if (newProgress === null) return;
-
-    // Validate input
-    const progressNum = parseInt(newProgress);
-    if (isNaN(progressNum) || progressNum < 0 || progressNum > 100) {
-        alert('Please enter a number between 0 and 100!');
-        return;
+    // Initialize schedule if it doesn't exist (for old plans)
+    if (!plan.schedule) {
+        plan.schedule = {};
+        plan.subjects.forEach(subject => {
+            plan.schedule[subject] = {};
+            for (let week = 1; week <= plan.weeks; week++) {
+                plan.schedule[subject][`Week ${week}`] = {
+                    topic: '',
+                    status: 'Not Started'
+                };
+            }
+        });
+        localStorage.setItem('studyPlans', JSON.stringify(plans));
     }
 
-    // Update plan
-    plan.progress = progressNum;
+    // Store current plan being edited
+    currentEditPlan = plan;
+    currentEditSubject = plan.subjects[0]; // Start with first subject
 
-    // Save updated plans
-    localStorage.setItem('studyPlans', JSON.stringify(plans));
+    // Update modal title
+    document.getElementById('schedule-title').textContent = `Edit Schedule: ${plan.name}`;
 
-    // Reload display
+    // Create subject tabs
+    createSubjectTabs(plan.subjects);
+
+    // Show schedule for first subject
+    showScheduleTable(plan.subjects[0]);
+
+    // Show modal
+    document.getElementById('schedule-modal').style.display = 'block';
+}
+
+/* ===========================
+   CREATE SUBJECT TABS
+   Creates tab buttons for each subject
+   =========================== */
+function createSubjectTabs(subjects) {
+    const tabsContainer = document.getElementById('subject-tabs');
+    tabsContainer.innerHTML = '';
+
+    subjects.forEach((subject, index) => {
+        const tab = document.createElement('button');
+        tab.type = 'button';
+        tab.className = 'subject-tab' + (index === 0 ? ' active' : '');
+        tab.textContent = subject;
+        tab.onclick = () => switchTab(subject);
+        tabsContainer.appendChild(tab);
+    });
+}
+
+/* ===========================
+   SWITCH TAB
+   Switches between subject tabs and displays that schedule
+   =========================== */
+function switchTab(subject) {
+    currentEditSubject = subject;
+
+    // Update active tab styling
+    const tabs = document.querySelectorAll('.subject-tab');
+    tabs.forEach(tab => {
+        if (tab.textContent === subject) {
+            tab.classList.add('active');
+        } else {
+            tab.classList.remove('active');
+        }
+    });
+
+    // Show schedule for selected subject
+    showScheduleTable(subject);
+}
+
+/* ===========================
+   SHOW SCHEDULE TABLE
+   Creates Excel-like table for a subject
+   =========================== */
+function showScheduleTable(subject) {
+    const schedule = currentEditPlan.schedule[subject];
+    const container = document.getElementById('schedule-container');
+    
+    // Create table HTML
+    let tableHTML = `
+        <table class="schedule-table">
+            <thead>
+                <tr>
+                    <th>Week</th>
+                    <th>Topic/Activity</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+
+    // Add row for each week
+    for (let week = 1; week <= currentEditPlan.weeks; week++) {
+        const weekKey = `Week ${week}`;
+        const weekData = schedule[weekKey];
+        const rowId = `row-${subject}-${week}`;
+
+        tableHTML += `
+            <tr class="schedule-row" id="${rowId}">
+                <td class="week-cell">${weekKey}</td>
+                <td class="topic-cell">
+                    <input 
+                        type="text" 
+                        class="topic-input" 
+                        data-subject="${subject}"
+                        data-week="${weekKey}"
+                        value="${weekData.topic}" 
+                        placeholder="Enter topic or activity"
+                    >
+                </td>
+                <td class="status-cell">
+                    <select class="status-select" data-subject="${subject}" data-week="${weekKey}">
+                        <option value="Not Started" ${weekData.status === 'Not Started' ? 'selected' : ''}>Not Started</option>
+                        <option value="In Progress" ${weekData.status === 'In Progress' ? 'selected' : ''}>In Progress</option>
+                        <option value="Completed" ${weekData.status === 'Completed' ? 'selected' : ''}>Completed</option>
+                    </select>
+                </td>
+            </tr>
+        `;
+    }
+
+    tableHTML += `
+            </tbody>
+        </table>
+    `;
+
+    container.innerHTML = tableHTML;
+
+    // Add event listeners for inline editing
+    const inputs = document.querySelectorAll('.topic-input');
+    const selects = document.querySelectorAll('.status-select');
+
+    inputs.forEach(input => {
+        input.addEventListener('change', updateScheduleData);
+    });
+
+    selects.forEach(select => {
+        select.addEventListener('change', updateScheduleData);
+    });
+}
+
+/* ===========================
+   UPDATE SCHEDULE DATA
+   Updates schedule when user edits table
+   =========================== */
+function updateScheduleData(event) {
+    const target = event.target;
+    const subject = target.getAttribute('data-subject');
+    const week = target.getAttribute('data-week');
+
+    if (target.classList.contains('topic-input')) {
+        currentEditPlan.schedule[subject][week].topic = target.value;
+    } else if (target.classList.contains('status-select')) {
+        currentEditPlan.schedule[subject][week].status = target.value;
+    }
+}
+
+/* ===========================
+   SAVE SCHEDULE
+   Saves the edited schedule back to storage
+   =========================== */
+function saveSchedule() {
+    // Get all plans from storage
+    let plans = JSON.parse(localStorage.getItem('studyPlans'));
+    
+    // Find and update the plan
+    const planIndex = plans.findIndex(p => p.id === currentEditPlan.id);
+    if (planIndex !== -1) {
+        plans[planIndex] = currentEditPlan;
+        localStorage.setItem('studyPlans', JSON.stringify(plans));
+    }
+
+    // Close modal and reload
+    closeScheduleModal();
     loadPlans();
-    alert('✅ Plan updated!');
+    alert('✅ Schedule saved successfully!');
+}
+
+/* ===========================
+   CLOSE SCHEDULE MODAL
+   Closes the schedule editor modal
+   =========================== */
+function closeScheduleModal() {
+    document.getElementById('schedule-modal').style.display = 'none';
+    currentEditPlan = null;
+    currentEditSubject = null;
 }
 
 /* ===========================
@@ -210,5 +389,16 @@ function scrollToSection(sectionId) {
     const section = document.getElementById(sectionId);
     if (section) {
         section.scrollIntoView({ behavior: 'smooth' });
+    }
+}
+
+/* ===========================
+   CLOSE MODAL ON OUTSIDE CLICK
+   Closes modal if user clicks outside of it
+   =========================== */
+window.onclick = function(event) {
+    const modal = document.getElementById('schedule-modal');
+    if (event.target === modal) {
+        closeScheduleModal();
     }
 }
