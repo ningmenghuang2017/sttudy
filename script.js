@@ -152,12 +152,35 @@ function createPlanCard(plan) {
             <span>${plan.progress}% Complete</span>
         </div>
         <div class="plan-buttons">
-            <button class="btn btn-small btn-edit" onclick="editPlanSchedule(${plan.id})">📅 Schedule</button>
-            <button class="btn btn-small btn-pause" onclick="togglePausePlan(${plan.id})">${pauseButtonText}</button>
-            <button class="btn btn-small btn-delete" onclick="deletePlan(${plan.id})">🗑️ Delete</button>
+            <button class="btn btn-small btn-edit schedule-btn" data-plan-id="${plan.id}">📅 Schedule</button>
+            <button class="btn btn-small btn-pause pause-btn" data-plan-id="${plan.id}">${pauseButtonText}</button>
+            <button class="btn btn-small btn-delete delete-btn" data-plan-id="${plan.id}">🗑️ Delete</button>
         </div>
         ${plan.isPaused ? '<div class="paused-badge">⏸️ PAUSED</div>' : ''}
     `;
+
+    // Add event listeners after creating the card
+    setTimeout(() => {
+        const scheduleBtn = card.querySelector('.schedule-btn');
+        const pauseBtn = card.querySelector('.pause-btn');
+        const deleteBtn = card.querySelector('.delete-btn');
+
+        if (scheduleBtn) {
+            scheduleBtn.addEventListener('click', function() {
+                editPlanSchedule(plan.id);
+            });
+        }
+        if (pauseBtn) {
+            pauseBtn.addEventListener('click', function() {
+                togglePausePlan(plan.id);
+            });
+        }
+        if (deleteBtn) {
+            deleteBtn.addEventListener('click', function() {
+                deletePlan(plan.id);
+            });
+        }
+    }, 0);
 
     return card;
 }
@@ -248,6 +271,8 @@ function editWeeks(planId) {
    OPEN SCHEDULE EDITOR
    =========================== */
 function editPlanSchedule(planId) {
+    console.log('editPlanSchedule called with planId:', planId);
+    
     let plans = JSON.parse(localStorage.getItem('studyPlans'));
     const plan = plans.find(p => p.id === planId);
 
@@ -282,7 +307,10 @@ function createWeekTabs(totalWeeks) {
         tab.type = 'button';
         tab.className = 'subject-tab' + (i === 1 ? ' active' : '');
         tab.textContent = `Week ${i}`;
-        tab.onclick = () => switchWeek(`Week ${i}`);
+        tab.addEventListener('click', function(e) {
+            e.preventDefault();
+            switchWeek(`Week ${i}`);
+        });
         tabsContainer.appendChild(tab);
     }
 }
@@ -339,7 +367,8 @@ function showWeekSchedule(week) {
         editButton.className = 'btn btn-small btn-edit-day';
         editButton.textContent = '✏️ Edit Schedule';
         editButton.type = 'button';
-        editButton.addEventListener('click', function() {
+        editButton.addEventListener('click', function(e) {
+            e.preventDefault();
             editDaySchedule(week, day);
         });
         
