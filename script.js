@@ -3,12 +3,62 @@
    =========================== */
 
 // Load plans from browser storage when page loads
-document.addEventListener('DOMContentLoaded', loadPlans);
+document.addEventListener('DOMContentLoaded', function() {
+    loadPlans();
+    setupEventDelegation();
+});
 
 // Global variable to store the plan being edited
 let currentEditPlan = null;
 let currentEditWeek = null;
 let currentEditDay = null;
+
+/* ===========================
+   SETUP EVENT DELEGATION
+   =========================== */
+function setupEventDelegation() {
+    // Delegate Schedule button clicks
+    document.addEventListener('click', function(e) {
+        if (e.target && e.target.classList.contains('schedule-btn')) {
+            const planId = parseInt(e.target.getAttribute('data-plan-id'));
+            editPlanSchedule(planId);
+        }
+    });
+
+    // Delegate Pause button clicks
+    document.addEventListener('click', function(e) {
+        if (e.target && e.target.classList.contains('pause-btn')) {
+            const planId = parseInt(e.target.getAttribute('data-plan-id'));
+            togglePausePlan(planId);
+        }
+    });
+
+    // Delegate Delete button clicks
+    document.addEventListener('click', function(e) {
+        if (e.target && e.target.classList.contains('delete-btn')) {
+            const planId = parseInt(e.target.getAttribute('data-plan-id'));
+            deletePlan(planId);
+        }
+    });
+
+    // Delegate Edit Day Schedule button clicks (on week tabs)
+    document.addEventListener('click', function(e) {
+        if (e.target && e.target.classList.contains('edit-day-btn')) {
+            const week = e.target.getAttribute('data-week');
+            const day = e.target.getAttribute('data-day');
+            editDaySchedule(week, day);
+        }
+    });
+
+    // Delegate Week tab clicks
+    document.addEventListener('click', function(e) {
+        if (e.target && e.target.classList.contains('subject-tab')) {
+            e.preventDefault();
+            const weekText = e.target.textContent;
+            switchWeek(weekText);
+        }
+    });
+}
 
 /* ===========================
    CREATE PLAN FUNCTION
@@ -159,29 +209,6 @@ function createPlanCard(plan) {
         ${plan.isPaused ? '<div class="paused-badge">⏸️ PAUSED</div>' : ''}
     `;
 
-    // Add event listeners after creating the card
-    setTimeout(() => {
-        const scheduleBtn = card.querySelector('.schedule-btn');
-        const pauseBtn = card.querySelector('.pause-btn');
-        const deleteBtn = card.querySelector('.delete-btn');
-
-        if (scheduleBtn) {
-            scheduleBtn.addEventListener('click', function() {
-                editPlanSchedule(plan.id);
-            });
-        }
-        if (pauseBtn) {
-            pauseBtn.addEventListener('click', function() {
-                togglePausePlan(plan.id);
-            });
-        }
-        if (deleteBtn) {
-            deleteBtn.addEventListener('click', function() {
-                deletePlan(plan.id);
-            });
-        }
-    }, 0);
-
     return card;
 }
 
@@ -307,10 +334,6 @@ function createWeekTabs(totalWeeks) {
         tab.type = 'button';
         tab.className = 'subject-tab' + (i === 1 ? ' active' : '');
         tab.textContent = `Week ${i}`;
-        tab.addEventListener('click', function(e) {
-            e.preventDefault();
-            switchWeek(`Week ${i}`);
-        });
         tabsContainer.appendChild(tab);
     }
 }
@@ -364,13 +387,11 @@ function showWeekSchedule(week) {
         dayBody.className = 'day-body';
         
         const editButton = document.createElement('button');
-        editButton.className = 'btn btn-small btn-edit-day';
+        editButton.className = 'btn btn-small btn-edit-day edit-day-btn';
         editButton.textContent = '✏️ Edit Schedule';
         editButton.type = 'button';
-        editButton.addEventListener('click', function(e) {
-            e.preventDefault();
-            editDaySchedule(week, day);
-        });
+        editButton.setAttribute('data-week', week);
+        editButton.setAttribute('data-day', day);
         
         dayBody.appendChild(editButton);
         
