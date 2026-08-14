@@ -10,56 +10,106 @@ let quizAnswers = [];
 const quizData = {
     math: [
         {
-            question: "What is 5 + 3?",
-            options: ["7", "8", "9", "10"],
+            question: "What is 47 + 38?",
+            options: ["85", "84", "86", "83"],
+            correct: 0
+        },
+        {
+            question: "What is 156 - 87?",
+            options: ["68", "69", "70", "71"],
             correct: 1
         },
         {
-            question: "What is 12 - 4?",
+            question: "What is 23 × 12?",
+            options: ["276", "265", "286", "256"],
+            correct: 0
+        },
+        {
+            question: "What is 144 ÷ 12?",
+            options: ["11", "12", "13", "14"],
+            correct: 1
+        },
+        {
+            question: "If a book costs $8.75 and you buy 3, how much do you spend?",
+            options: ["$25.25", "$26.25", "$27.25", "$24.25"],
+            correct: 1
+        },
+        {
+            question: "What is 15% of 200?",
+            options: ["25", "30", "35", "40"],
+            correct: 1
+        },
+        {
+            question: "A rectangle has a length of 12 cm and width of 8 cm. What is its area?",
+            options: ["86 cm²", "96 cm²", "106 cm²", "76 cm²"],
+            correct: 1
+        },
+        {
+            question: "What is 2³ + 3²?",
+            options: ["15", "16", "17", "18"],
+            correct: 2
+        },
+        {
+            question: "If you have 48 apples and divide them equally among 6 people, how many does each person get?",
             options: ["6", "7", "8", "9"],
             correct: 2
         },
         {
-            question: "What is 6 × 7?",
-            options: ["36", "40", "42", "48"],
-            correct: 2
-        },
-        {
-            question: "What is 20 ÷ 4?",
-            options: ["4", "5", "6", "7"],
-            correct: 1
-        },
-        {
-            question: "What is 15 + 8?",
-            options: ["22", "23", "24", "25"],
-            correct: 1
+            question: "What is the least common multiple of 4 and 6?",
+            options: ["12", "24", "18", "20"],
+            correct: 0
         }
     ],
     reading: [
         {
-            question: "What is the main idea of a story?",
-            options: ["The setting", "The central message or theme", "The characters' names", "The time it takes to read"],
+            question: "What is the primary purpose of a fable?",
+            options: ["To entertain with fantasy", "To teach a moral lesson", "To describe historical events", "To provide facts about science"],
             correct: 1
         },
         {
-            question: "Which word means 'very happy'?",
-            options: ["Sad", "Delighted", "Angry", "Tired"],
+            question: "Which literary device compares two things using 'like' or 'as'?",
+            options: ["Metaphor", "Simile", "Personification", "Alliteration"],
             correct: 1
         },
         {
-            question: "What does it mean to 'infer'?",
-            options: ["To read out loud", "To make a guess based on clues", "To skip a page", "To highlight text"],
+            question: "What does 'antagonist' mean in a story?",
+            options: ["The main character", "A character who opposes the protagonist", "A supporting character", "A character who tells the story"],
             correct: 1
         },
         {
-            question: "In a story, the 'conflict' is:",
-            options: ["A conversation", "The problem the character faces", "The ending", "The title"],
+            question: "In literature, what is 'foreshadowing'?",
+            options: ["A flashback to the past", "Hints that suggest what will happen later", "A sudden plot twist", "The climax of the story"],
             correct: 1
         },
         {
-            question: "What is a 'plot'?",
-            options: ["The setting of the story", "The sequence of events in a story", "The author's name", "The book cover"],
+            question: "What is the theme of a story?",
+            options: ["The setting where it takes place", "The main message or underlying idea", "The sequence of events", "The dialogue between characters"],
             correct: 1
+        },
+        {
+            question: "Which point of view uses 'he/she/they' to tell the story?",
+            options: ["First person", "Second person", "Third person", "Fourth person"],
+            correct: 2
+        },
+        {
+            question: "What does 'characterization' refer to?",
+            options: ["The number of characters in a story", "How an author reveals a character's traits and personality", "The names of all characters", "The dialogue characters speak"],
+            correct: 1
+        },
+        {
+            question: "What is irony?",
+            options: ["A comparison between two things", "When the opposite of what is expected happens", "A repeated sound at the beginning of words", "A person's perspective on events"],
+            correct: 1
+        },
+        {
+            question: "In a story, what is the 'climax'?",
+            options: ["The beginning of the story", "The point of greatest tension or turning point", "The resolution of the conflict", "A description of the setting"],
+            correct: 1
+        },
+        {
+            question: "What is the purpose of a 'flashback' in a narrative?",
+            options: ["To show what happens next", "To jump to the ending", "To reveal past events that explain the present", "To confuse the reader"],
+            correct: 2
         }
     ],
     vocabulary: [
