@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SSAT Study Planner</title>
     <link rel="stylesheet" href="style.css">
+    <!-- Google reCAPTCHA v2 -->
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </head>
 <body>
     <!-- NAVIGATION HEADER -->
@@ -16,6 +18,7 @@
                 <a href="#about">About</a>
                 <a href="#create-plan">Create Plan</a>
                 <a href="#my-plans">My Plans</a>
+                <a href="#learning">Learning &amp; Practice</a>
                 <a href="#practice-tests">Practice Tests</a>
             </nav>
         </div>
@@ -82,6 +85,15 @@
                     <input type="number" id="weeks" min="1" max="20" placeholder="e.g., 16" required>
                 </div>
 
+                <!-- reCAPTCHA v2 -->
+                <div class="form-group">
+                    <!-- NOTE: Replace the data-sitekey value below with your real reCAPTCHA v2 site key
+                         from https://www.google.com/recaptcha/admin — the current key is Google's
+                         public test key which always passes and provides no real bot protection. -->
+                    <div class="g-recaptcha" data-sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI" data-theme="dark"></div>
+                    <p id="recaptcha-error" class="recaptcha-error" style="display:none;">⚠️ Please complete the reCAPTCHA verification.</p>
+                </div>
+
                 <!-- Submit Button -->
                 <button type="submit" class="btn btn-success">Create Plan</button>
             </form>
@@ -98,6 +110,52 @@
         </div>
     </section>
 
+    <!-- LEARNING & PRACTICE SECTION -->
+    <section id="learning" class="learning-section">
+        <div class="container">
+            <h2>🎓 Learning &amp; Practice</h2>
+            <p class="learning-intro">Choose a quiz category to start practicing. Your schedule will automatically update as you learn!</p>
+
+            <div class="quiz-categories">
+                <div class="quiz-category-card">
+                    <div class="quiz-cat-icon">📝</div>
+                    <h3>Vocabulary &amp; Word Analogies</h3>
+                    <p>Build your vocabulary and learn word relationships.</p>
+                    <button class="btn btn-primary" onclick="openQuiz('vocabulary')">Start Quiz</button>
+                </div>
+                <div class="quiz-category-card">
+                    <div class="quiz-cat-icon">📖</div>
+                    <h3>Reading Comprehension</h3>
+                    <p>Read passages and answer questions to boost comprehension.</p>
+                    <button class="btn btn-primary" onclick="openQuiz('reading')">Start Quiz</button>
+                </div>
+                <div class="quiz-category-card">
+                    <div class="quiz-cat-icon">🔢</div>
+                    <h3>Math Concepts</h3>
+                    <p>Practice math problems and sharpen your number skills.</p>
+                    <button class="btn btn-primary" onclick="openQuiz('math')">Start Quiz</button>
+                </div>
+                <div class="quiz-category-card">
+                    <div class="quiz-cat-icon">🧠</div>
+                    <h3>Verbal Reasoning</h3>
+                    <p>Strengthen your logic and verbal reasoning abilities.</p>
+                    <button class="btn btn-primary" onclick="openQuiz('verbal')">Start Quiz</button>
+                </div>
+            </div>
+
+            <!-- Keep Practicing Message -->
+            <div id="keep-practicing-msg" class="keep-practicing-msg" style="display:none;">
+                💪 Keep practicing! Score above 30% to unlock the break activity. You can do it!
+            </div>
+
+            <!-- Quiz Score History -->
+            <div class="quiz-history">
+                <h3>📊 Recent Quiz Scores</h3>
+                <div id="quiz-history-list"></div>
+            </div>
+        </div>
+    </section>
+
     <!-- PRACTICE TESTS SECTION -->
     <section id="practice-tests" class="practice-tests">
         <div class="container">
@@ -109,6 +167,32 @@
             </div>
         </div>
     </section>
+
+    <!-- QUIZ MODAL -->
+    <div id="quiz-modal" class="modal">
+        <div class="modal-content quiz-modal-content">
+            <span class="close" onclick="closeQuiz()">&times;</span>
+            <h2 id="quiz-modal-title">Quiz</h2>
+
+            <!-- Progress -->
+            <div class="quiz-progress-row">
+                <span id="quiz-progress-text">Question 1 of 10</span>
+                <span id="quiz-score-live">Score: 0 / 0</span>
+            </div>
+            <div class="quiz-progress-bar">
+                <div id="quiz-progress-bar-fill" class="quiz-progress-bar-fill" style="width:0%"></div>
+            </div>
+
+            <!-- Question Area -->
+            <div id="quiz-question-area" class="quiz-question-area"></div>
+
+            <!-- Navigation Buttons -->
+            <div class="quiz-nav-buttons">
+                <button id="quiz-next-btn" class="btn btn-primary" onclick="quizNext()" style="display:none;">Next Question ➡️</button>
+                <button id="quiz-done-btn" class="btn btn-success" style="display:none;">Done ✅</button>
+            </div>
+        </div>
+    </div>
 
     <!-- WEEKLY SCHEDULE EDITOR MODAL -->
     <div id="schedule-modal" class="modal">
@@ -168,5 +252,6 @@
     <!-- Link to JavaScript -->
     <script src="break-manager.js"></script>
     <script src="script.js"></script>
+    <script src="quiz.js"></script>
 </body>
 </html>

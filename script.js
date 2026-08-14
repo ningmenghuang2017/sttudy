@@ -67,6 +67,15 @@ function setupEventDelegation() {
 function createPlan(event) {
     event.preventDefault(); // Prevent page reload
 
+    // Validate reCAPTCHA
+    const recaptchaResponse = typeof grecaptcha !== 'undefined' ? grecaptcha.getResponse() : '';
+    const recaptchaError = document.getElementById('recaptcha-error');
+    if (!recaptchaResponse) {
+        if (recaptchaError) recaptchaError.style.display = 'block';
+        return;
+    }
+    if (recaptchaError) recaptchaError.style.display = 'none';
+
     // Get form values
     const planName = document.getElementById('plan-name').value;
     const weeksInput = document.getElementById('weeks').value;
@@ -128,6 +137,8 @@ function createPlan(event) {
 
     // Clear form
     document.querySelector('.plan-form').reset();
+    // Reset reCAPTCHA
+    if (typeof grecaptcha !== 'undefined') grecaptcha.reset();
 
     // Show success message
     alert('✅ Study plan created successfully!');
