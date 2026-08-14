@@ -312,42 +312,75 @@ function showWeekSchedule(week) {
     const weekData = currentEditPlan.schedule[week];
     const container = document.getElementById('schedule-container');
     
-    let html = `<div class="week-schedule">`;
+    container.innerHTML = '';
+    
+    const weekDiv = document.createElement('div');
+    weekDiv.className = 'week-schedule';
     
     const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
     daysOfWeek.forEach(day => {
         const dayData = weekData[day];
-        html += `
-            <div class="day-card">
-                <div class="day-header">
-                    <h3>${dayData.topic}</h3>
-                    <span class="day-name">${day}</span>
-                </div>
-                <div class="day-body">
-                    <button class="btn btn-small btn-edit-day" onclick="editDaySchedule('${week}', '${day}')">
-                        ✏️ Edit Schedule
-                    </button>
-                </div>
-                <div class="day-footer">
-                    <label class="day-complete">
-                        <input type="checkbox" ${dayData.weekComplete ? 'checked' : ''} 
-                            data-week="${week}" data-day="${day}" onchange="updateDayComplete(this)">
-                        <span>Day Complete</span>
-                    </label>
-                </div>
-            </div>
+        
+        const dayCard = document.createElement('div');
+        dayCard.className = 'day-card';
+        
+        const dayHeader = document.createElement('div');
+        dayHeader.className = 'day-header';
+        dayHeader.innerHTML = `
+            <h3>${dayData.topic}</h3>
+            <span class="day-name">${day}</span>
         `;
+        
+        const dayBody = document.createElement('div');
+        dayBody.className = 'day-body';
+        
+        const editButton = document.createElement('button');
+        editButton.className = 'btn btn-small btn-edit-day';
+        editButton.textContent = '✏️ Edit Schedule';
+        editButton.type = 'button';
+        editButton.addEventListener('click', function() {
+            editDaySchedule(week, day);
+        });
+        
+        dayBody.appendChild(editButton);
+        
+        const dayFooter = document.createElement('div');
+        dayFooter.className = 'day-footer';
+        
+        const label = document.createElement('label');
+        label.className = 'day-complete';
+        
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.checked = dayData.weekComplete;
+        checkbox.setAttribute('data-week', week);
+        checkbox.setAttribute('data-day', day);
+        checkbox.addEventListener('change', function() {
+            updateDayComplete(this);
+        });
+        
+        label.appendChild(checkbox);
+        label.appendChild(document.createTextNode(' Day Complete'));
+        
+        dayFooter.appendChild(label);
+        
+        dayCard.appendChild(dayHeader);
+        dayCard.appendChild(dayBody);
+        dayCard.appendChild(dayFooter);
+        
+        weekDiv.appendChild(dayCard);
     });
-
-    html += `</div>`;
-    container.innerHTML = html;
+    
+    container.appendChild(weekDiv);
 }
 
 /* ===========================
    EDIT DAY SCHEDULE - Opens Spreadsheet
    =========================== */
 function editDaySchedule(week, day) {
+    console.log('editDaySchedule called with week:', week, 'day:', day);
+    
     currentEditWeek = week;
     currentEditDay = day;
     
@@ -401,7 +434,9 @@ function createDaySpreadsheet(dayData) {
         durationInput.className = 'excel-input';
         durationInput.value = chunk.duration;
         durationInput.dataset.chunkIndex = index;
-        durationInput.onchange = () => updateChunk(index, 'duration', durationInput.value);
+        durationInput.addEventListener('change', function() {
+            updateChunk(index, 'duration', this.value);
+        });
         durationCell.appendChild(durationInput);
         row.appendChild(durationCell);
         
@@ -414,7 +449,9 @@ function createDaySpreadsheet(dayData) {
         activityInput.value = chunk.activity;
         activityInput.placeholder = 'e.g., Vocabulary, 🍪 Break, Math Problems';
         activityInput.dataset.chunkIndex = index;
-        activityInput.onchange = () => updateChunk(index, 'activity', activityInput.value);
+        activityInput.addEventListener('change', function() {
+            updateChunk(index, 'activity', this.value);
+        });
         activityCell.appendChild(activityInput);
         row.appendChild(activityCell);
         
@@ -440,16 +477,16 @@ function createDaySpreadsheet(dayData) {
             statusSelect.appendChild(option);
         });
         
-        statusSelect.onchange = () => {
-            updateChunk(index, 'status', statusSelect.value);
+        statusSelect.addEventListener('change', function() {
+            updateChunk(index, 'status', this.value);
             // Check if this is a break row and the previous chunk is completed
-            if (statusSelect.value === 'Break' && index > 0) {
+            if (this.value === 'Break' && index > 0) {
                 const prevChunk = dayData.chunks[index - 1];
                 if (prevChunk.status === 'Completed') {
                     openBreakPopup();
                 }
             }
-        };
+        });
         statusCell.appendChild(statusSelect);
         row.appendChild(statusCell);
         
