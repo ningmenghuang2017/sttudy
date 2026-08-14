@@ -69,6 +69,7 @@ function createPlan(event) {
         subjects: subjects,
         createdDate: new Date().toLocaleDateString(),
         progress: 0,
+        isPaused: false,
         schedule: schedule
     };
 
@@ -124,17 +125,20 @@ function loadPlans() {
    =========================== */
 function createPlanCard(plan) {
     const card = document.createElement('div');
-    card.className = 'plan-card';
+    card.className = 'plan-card' + (plan.isPaused ? ' paused' : '');
 
     const subjectTags = plan.subjects
         .map(subject => `<span class="subject-tag">${subject}</span>`)
         .join('');
 
+    const pauseButtonText = plan.isPaused ? '▶️ Resume' : '⏸️ Pause';
+
     card.innerHTML = `
         <h3>${plan.name}</h3>
         <div class="plan-info">
             <strong>📅 Created:</strong> ${plan.createdDate}<br>
-            <strong>⏱️ Duration:</strong> ${plan.weeks} weeks
+            <strong>⏱️ Duration:</strong> <span id="weeks-display-${plan.id}">${plan.weeks}</span> weeks
+            <button class="btn btn-small btn-edit-weeks" onclick="editWeeks(${plan.id})" style="margin-left: 0.5rem; font-size: 0.8rem;">✏️ Edit</button>
         </div>
         <div class="plan-subjects">
             <strong>📚 Subjects:</strong><br>
@@ -148,12 +152,96 @@ function createPlanCard(plan) {
             <span>${plan.progress}% Complete</span>
         </div>
         <div class="plan-buttons">
-            <button class="btn btn-small btn-edit" onclick="editPlanSchedule(${plan.id})">📅 Weekly Schedule</button>
+            <button class="btn btn-small btn-edit" onclick="editPlanSchedule(${plan.id})">📅 Schedule</button>
+            <button class="btn btn-small btn-pause" onclick="togglePausePlan(${plan.id})">${pauseButtonText}</button>
             <button class="btn btn-small btn-delete" onclick="deletePlan(${plan.id})">🗑️ Delete</button>
         </div>
+        ${plan.isPaused ? '<div class="paused-badge">⏸️ PAUSED</div>' : ''}
     `;
 
     return card;
+}
+
+/* ===========================
+   TOGGLE PAUSE PLAN
+   =========================== */
+function togglePausePlan(planId) {
+    let plans = JSON.parse(localStorage.getItem('studyPlans'));
+    const plan = plans.find(p => p.id === planId);
+    
+    if (plan) {
+        plan.isPaused = !plan.isPaused;
+        localStorage.setItem('studyPlans', JSON.stringify(plans));
+        loadPlans();
+        alert(plan.isPaused ? '⏸️ Plan paused!' : '▶️ Plan resumed!');
+    }
+}
+
+/* ===========================
+   EDIT WEEKS
+   =========================== */
+function editWeeks(planId) {
+    let plans = JSON.parse(localStorage.getItem('studyPlans'));
+    const plan = plans.find(p => p.id === planId);
+    
+    if (!plan) {
+        alert('Plan not found!');
+        return;
+    }
+
+    const newWeeks = prompt(`Current weeks: ${plan.weeks}\n\nEnter new number of weeks:`, plan.weeks);
+    
+    if (newWeeks === null) return; // User cancelled
+    
+    const weeksNum = parseInt(newWeeks);
+    if (isNaN(weeksNum) || weeksNum < 1 || weeksNum > 20) {
+        alert('Please enter a valid number between 1 and 20!');
+        return;
+    }
+
+    const oldWeeks = plan.weeks;
+    
+    // If new weeks is more, add new weeks
+    if (weeksNum > oldWeeks) {
+        const daysOfWeek = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+        const dayTopics = {
+            'Monday': '🔵 VERBAL WORD DAY',
+            'Tuesday': '🟢 READING DAY',
+            'Wednesday': '🟡 MATH DAY',
+            'Thursday': '🟣 ANALOGIES DAY',
+            'Friday': '🟠 MIXED DAY',
+            'Saturday': '🔴 MINI SSAT',
+            'Sunday': '⚫ REST DAY'
+        };
+
+        for (let week = oldWeeks + 1; week <= weeksNum; week++) {
+            plan.schedule[`Week ${week}`] = {};
+            daysOfWeek.forEach(day => {
+                plan.schedule[`Week ${week}`][day] = {
+                    topic: dayTopics[day],
+                    chunks: [
+                        { duration: '10-12 min', activity: '', status: 'Not Started' },
+                        { duration: '3-5 min', activity: '🍪 Break', status: 'Break' },
+                        { duration: '10-12 min', activity: '', status: 'Not Started' },
+                        { duration: '3-5 min', activity: '🍪 Break', status: 'Break' },
+                        { duration: '5-10 min', activity: '', status: 'Not Started' }
+                    ],
+                    weekComplete: false
+                };
+            });
+        }
+    } 
+    // If new weeks is less, remove extra weeks
+    else if (weeksNum < oldWeeks) {
+        for (let week = weeksNum + 1; week <= oldWeeks; week++) {
+            delete plan.schedule[`Week ${week}`];
+        }
+    }
+
+    plan.weeks = weeksNum;
+    localStorage.setItem('studyPlans', JSON.stringify(plans));
+    loadPlans();
+    alert(`✅ Plan updated to ${weeksNum} weeks!`);
 }
 
 /* ===========================
@@ -303,6 +391,7 @@ function createDaySpreadsheet(dayData) {
     dayData.chunks.forEach((chunk, index) => {
         const row = document.createElement('tr');
         row.className = 'excel-row';
+        row.id = `chunk-row-${index}`;
         
         // Duration cell
         const durationCell = document.createElement('td');
@@ -351,7 +440,16 @@ function createDaySpreadsheet(dayData) {
             statusSelect.appendChild(option);
         });
         
-        statusSelect.onchange = () => updateChunk(index, 'status', statusSelect.value);
+        statusSelect.onchange = () => {
+            updateChunk(index, 'status', statusSelect.value);
+            // Check if this is a break row and the previous chunk is completed
+            if (statusSelect.value === 'Break' && index > 0) {
+                const prevChunk = dayData.chunks[index - 1];
+                if (prevChunk.status === 'Completed') {
+                    openBreakPopup();
+                }
+            }
+        };
         statusCell.appendChild(statusSelect);
         row.appendChild(statusCell);
         
@@ -362,6 +460,27 @@ function createDaySpreadsheet(dayData) {
     wrapper.appendChild(table);
     container.innerHTML = '';
     container.appendChild(wrapper);
+}
+
+/* ===========================
+   OPEN BREAK POPUP
+   =========================== */
+function openBreakPopup() {
+    document.getElementById('break-popup').style.display = 'flex';
+}
+
+/* ===========================
+   CLOSE BREAK POPUP
+   =========================== */
+function closeBreakPopup() {
+    document.getElementById('break-popup').style.display = 'none';
+}
+
+/* ===========================
+   OPEN BREAK FILE
+   =========================== */
+function openBreakFile() {
+    window.open('hhhhhhhhhhhhh.html', '_blank');
 }
 
 /* ===========================
@@ -454,10 +573,14 @@ function scrollToSection(sectionId) {
 window.onclick = function(event) {
     const modal = document.getElementById('schedule-modal');
     const dayModal = document.getElementById('day-schedule-modal');
+    const breakPopup = document.getElementById('break-popup');
     if (event.target === modal) {
         closeScheduleModal();
     }
     if (event.target === dayModal) {
         closeDayScheduleModal();
+    }
+    if (event.target === breakPopup) {
+        closeBreakPopup();
     }
 }
