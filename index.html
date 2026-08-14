@@ -110,22 +110,39 @@
         </div>
     </section>
 
-    <!-- SCHEDULE EDITOR MODAL -->
+    <!-- WEEKLY SCHEDULE EDITOR MODAL -->
     <div id="schedule-modal" class="modal">
         <div class="modal-content">
             <span class="close" onclick="closeScheduleModal()">&times;</span>
-            <h2 id="schedule-title">Edit Schedule</h2>
+            <h2 id="schedule-title">Edit Weekly Schedule</h2>
             
-            <!-- Subject Tabs -->
+            <!-- Week Tabs -->
             <div id="subject-tabs" class="subject-tabs"></div>
             
-            <!-- Schedule Table -->
+            <!-- Week Schedule Container -->
             <div id="schedule-container" class="schedule-container"></div>
             
             <!-- Modal Buttons -->
             <div class="modal-buttons">
-                <button class="btn btn-success" onclick="saveSchedule()">💾 Save Changes</button>
+                <button class="btn btn-success" onclick="saveSchedule()">💾 Save Schedule</button>
                 <button class="btn btn-delete" onclick="closeScheduleModal()">❌ Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- DAY SCHEDULE EDITOR MODAL (Spreadsheet) -->
+    <div id="day-schedule-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeDayScheduleModal()">&times;</span>
+            <h2 id="day-schedule-title">Edit Day Schedule</h2>
+            
+            <!-- Day Schedule Spreadsheet Container -->
+            <div id="day-schedule-container" class="day-schedule-container"></div>
+            
+            <!-- Modal Buttons -->
+            <div class="modal-buttons">
+                <button class="btn btn-success" onclick="saveDaySchedule()">💾 Save Changes</button>
+                <button class="btn btn-delete" onclick="closeDayScheduleModal()">❌ Cancel</button>
             </div>
         </div>
     </div>
