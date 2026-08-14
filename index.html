@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SSAT Study Planner</title>
     <link rel="stylesheet" href="style.css">
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </head>
 <body>
     <!-- NAVIGATION HEADER -->
@@ -83,6 +84,11 @@
                     <input type="number" id="weeks" min="1" max="20" placeholder="e.g., 16" required>
                 </div>
 
+                <!-- reCAPTCHA v2 -->
+                <div class="form-group">
+                    <div class="g-recaptcha" data-sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"></div>
+                </div>
+
                 <!-- Submit Button -->
                 <button type="submit" class="btn btn-success">Create Plan</button>
             </form>
@@ -110,7 +116,7 @@
                     <button class="btn btn-quiz" onclick="startQuiz('reading')">📖 Reading Quiz</button>
                     <button class="btn btn-quiz" onclick="startQuiz('vocabulary')">🔤 Vocabulary Quiz</button>
                 </div>
-                <p class="quiz-tips">💡 <strong>Tips:</strong> Take your time to read each question carefully. You can review your answers at the end!</p>
+                <p class="quiz-tips">💡 <strong>Tips:</strong> You have 10 seconds per question! Answer quickly and accurately!</p>
             </div>
         </div>
     </section>
