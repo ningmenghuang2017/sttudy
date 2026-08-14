@@ -16,6 +16,7 @@
                 <a href="#about">About</a>
                 <a href="#create-plan">Create Plan</a>
                 <a href="#my-plans">My Plans</a>
+                <a href="#quizzes">Quizzes</a>
                 <a href="#practice-tests">Practice Tests</a>
             </nav>
         </div>
@@ -94,6 +95,22 @@
             <h2>My Study Plans</h2>
             <div id="plans-list" class="plans-list">
                 <p class="empty-message">No plans yet. Create your first plan above! ⬆️</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- QUIZZES SECTION -->
+    <section id="quizzes" class="quizzes">
+        <div class="container">
+            <h2>📝 Take a Quiz</h2>
+            <div class="quizzes-content">
+                <p class="quizzes-intro">Test your knowledge with interactive quizzes! Select a subject and challenge yourself.</p>
+                <div class="quiz-buttons">
+                    <button class="btn btn-quiz" onclick="startQuiz('math')">📐 Math Quiz</button>
+                    <button class="btn btn-quiz" onclick="startQuiz('reading')">📖 Reading Quiz</button>
+                    <button class="btn btn-quiz" onclick="startQuiz('vocabulary')">🔤 Vocabulary Quiz</button>
+                </div>
+                <p class="quiz-tips">💡 <strong>Tips:</strong> Take your time to read each question carefully. You can review your answers at the end!</p>
             </div>
         </div>
     </section>
