@@ -465,7 +465,7 @@ body {
     border-radius: 1rem;
     width: 90%;
     max-width: 1200px;
-    max-height: 85vh;
+    max-height: 90vh;
     overflow-y: auto;
 }
 
@@ -485,10 +485,11 @@ body {
 #schedule-title {
     color: var(--accent-blue);
     margin-bottom: 1.5rem;
+    clear: both;
 }
 
 /* ===========================
-   SUBJECT TABS
+   WEEK TABS
    =========================== */
 
 .subject-tabs {
@@ -503,7 +504,6 @@ body {
 .subject-tab {
     background: rgba(99, 102, 241, 0.1);
     color: var(--text-light);
-    border: 1px solid rgba(99, 102, 241, 0.2);
     padding: 0.7rem 1.5rem;
     border-radius: 0.5rem 0.5rem 0 0;
     cursor: pointer;
@@ -514,113 +514,162 @@ body {
 
 .subject-tab:hover {
     background: rgba(99, 102, 241, 0.2);
-    border-color: var(--primary-color);
 }
 
 .subject-tab.active {
     background: var(--primary-color);
     color: white;
-    border-color: var(--primary-color);
 }
 
 /* ===========================
-   EXCEL SPREADSHEET STYLES
-   =========================== */
-
-.excel-wrapper {
-    overflow-x: auto;
-    border: 2px solid #ccc;
-    background: white;
-    border-radius: 0.5rem;
-}
-
-.excel-spreadsheet {
-    border-collapse: collapse;
-    width: 100%;
-    background: white;
-    font-family: 'Calibri', 'Arial', sans-serif;
-    font-size: 14px;
-}
-
-.excel-spreadsheet .header-row {
-    background: linear-gradient(to bottom, #d9e1f2, #b4c7e7);
-    border: 1px solid #4472c4;
-}
-
-.excel-header {
-    border: 1px solid #4472c4;
-    padding: 8px 6px;
-    text-align: center;
-    font-weight: bold;
-    color: #000;
-    background: linear-gradient(to bottom, #d9e1f2, #b4c7e7);
-    min-height: 24px;
-}
-
-.excel-row {
-    border: 1px solid #d0cece;
-}
-
-.excel-row:hover {
-    background-color: #f2f2f2;
-}
-
-.excel-cell {
-    border: 1px solid #d0cece;
-    padding: 0;
-    height: 24px;
-    min-width: 80px;
-}
-
-.week-header {
-    background-color: #e7e6e6;
-    font-weight: bold;
-    padding: 6px 4px;
-    text-align: center;
-    border: 1px solid #d0cece;
-}
-
-.excel-input,
-.excel-select {
-    width: 100%;
-    height: 100%;
-    border: none;
-    padding: 4px 6px;
-    font-family: 'Calibri', 'Arial', sans-serif;
-    font-size: 14px;
-    background: white;
-    color: #000;
-}
-
-.excel-input {
-    box-sizing: border-box;
-}
-
-.excel-input:focus,
-.excel-select:focus {
-    outline: 2px solid #4472c4;
-    outline-offset: -1px;
-}
-
-.excel-select {
-    appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23000' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 4px center;
-    padding-right: 18px;
-}
-
-.excel-select option {
-    background: white;
-    color: #000;
-}
-
-/* ===========================
-   SCHEDULE CONTAINER
+   WEEK SCHEDULE - DAY CARDS
    =========================== */
 
 .schedule-container {
     margin-bottom: 2rem;
+}
+
+.week-schedule {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.day-card {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(168, 85, 247, 0.05));
+    border: 2px solid rgba(99, 102, 241, 0.3);
+    border-radius: 0.8rem;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.day-card:hover {
+    border-color: var(--primary-color);
+    box-shadow: 0 8px 20px rgba(99, 102, 241, 0.2);
+}
+
+.day-header {
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-purple));
+    padding: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.day-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    color: white;
+}
+
+.day-name {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: 600;
+}
+
+.tasks-list {
+    padding: 1rem;
+}
+
+.task-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(99, 102, 241, 0.2);
+}
+
+.task-item:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.task-name {
+    background-color: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    border-radius: 0.4rem;
+    padding: 0.6rem;
+    color: var(--text-light);
+    font-size: 0.95rem;
+}
+
+.task-name::placeholder {
+    color: rgba(176, 176, 176, 0.5);
+}
+
+.task-name:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    background-color: rgba(99, 102, 241, 0.1);
+}
+
+.task-duration {
+    background-color: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    border-radius: 0.4rem;
+    padding: 0.6rem;
+    color: var(--text-light);
+    font-size: 0.9rem;
+    width: 100%;
+}
+
+.task-duration::placeholder {
+    color: rgba(176, 176, 176, 0.5);
+}
+
+.task-duration:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    background-color: rgba(99, 102, 241, 0.1);
+}
+
+.task-status {
+    background-color: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    border-radius: 0.4rem;
+    padding: 0.6rem;
+    color: var(--text-light);
+    font-size: 0.9rem;
+    cursor: pointer;
+}
+
+.task-status:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    background-color: rgba(99, 102, 241, 0.1);
+}
+
+.task-status option {
+    background: var(--bg-dark);
+    color: var(--text-light);
+}
+
+.day-footer {
+    padding: 1rem;
+    border-top: 1px solid rgba(99, 102, 241, 0.2);
+    display: flex;
+    align-items: center;
+}
+
+.day-complete {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    color: var(--success-color);
+    font-weight: 600;
+    margin: 0;
+}
+
+.day-complete input[type="checkbox"] {
+    cursor: pointer;
+    width: 1.2rem;
+    height: 1.2rem;
+    accent-color: var(--success-color);
 }
 
 /* ===========================
@@ -694,13 +743,14 @@ body {
         padding: 1rem;
     }
 
-    .excel-spreadsheet {
-        font-size: 12px;
+    .week-schedule {
+        grid-template-columns: 1fr;
     }
 
-    .excel-header,
-    .excel-cell {
-        padding: 4px 3px;
+    .day-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
     }
 
     .subject-tabs {
